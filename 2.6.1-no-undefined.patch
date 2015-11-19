@@ -1,0 +1,54 @@
+--- origsrc/muffin-2.6.1/src/Makefile.am	2015-05-31 10:59:04.000000000 -0500
++++ src/muffin-2.6.1/src/Makefile.am	2015-07-16 13:46:52.314570500 -0500
+@@ -3,7 +3,7 @@
+ 
+ lib_LTLIBRARIES = libmuffin.la
+ 
+-SUBDIRS=wm-tester tools compositor/plugins
++SUBDIRS=wm-tester tools . compositor/plugins
+ 
+ AM_CPPFLAGS=								\
+ 	$(MUFFIN_CFLAGS)						\
+@@ -148,7 +148,7 @@ libmuffin_la_SOURCES =				\
+ 	$(muffin_built_sources)
+ 
+ libmuffin_la_LDFLAGS = -no-undefined
+-libmuffin_la_LIBADD  = $(MUFFIN_LIBS) -lclutter-glx-1.0
++libmuffin_la_LIBADD  = $(MUFFIN_LIBS)
+ 
+ # Headers installed for plugins; introspected information will
+ # be extracted into Muffin-<version>.gir
+@@ -194,7 +194,7 @@ muffin_theme_viewer_SOURCES=  \
+ bin_PROGRAMS=muffin muffin-theme-viewer
+ 
+ muffin_SOURCES = core/muffin.c
+-muffin_LDADD = $(MUFFIN_LIBS) libmuffin.la -lclutter-glx-1.0
++muffin_LDADD = $(MUFFIN_LIBS) libmuffin.la
+ 
+ if HAVE_INTROSPECTION
+ include $(INTROSPECTION_MAKEFILE)
+--- origsrc/muffin-2.6.1/src/compositor/meta-plugin-manager.c	2015-05-31 10:59:04.000000000 -0500
++++ src/muffin-2.6.1/src/compositor/meta-plugin-manager.c	2015-07-16 13:46:52.320571300 -0500
+@@ -65,7 +65,7 @@ meta_plugin_manager_load (const gchar *p
+   if (g_path_is_absolute (plugin_name))
+     path = g_strdup (plugin_name);
+   else
+-    path = g_strconcat (dpath, plugin_name, ".so", NULL);
++    path = g_strconcat (dpath, plugin_name, "." G_MODULE_SUFFIX, NULL);
+ 
+   module = g_object_new (META_TYPE_MODULE, "path", path, NULL);
+   if (!module || !g_type_module_use (G_TYPE_MODULE (module)))
+--- origsrc/muffin-2.6.1/src/compositor/plugins/Makefile.am	2015-05-31 10:59:04.000000000 -0500
++++ src/muffin-2.6.1/src/compositor/plugins/Makefile.am	2015-07-16 13:46:52.326072000 -0500
+@@ -3,10 +3,9 @@ pkglibdir=@MUFFIN_PLUGIN_DIR@
+ 
+ AM_CPPFLAGS=@MUFFIN_CFLAGS@ -I $(top_srcdir)/src -DMUFFIN_LIBEXECDIR=\"$(libexecdir)\" -DHOST_ALIAS=\"@HOST_ALIAS@\" -DMUFFIN_LOCALEDIR=\"$(prefix)/@DATADIRNAME@/locale\" -DMUFFIN_PKGDATADIR=\"$(pkgdatadir)\" -DMUFFIN_DATADIR=\"$(datadir)\" -DG_LOG_DOMAIN=\"muffin\" -DSN_API_NOT_YET_FROZEN=1 -DMUFFIN_MAJOR_VERSION=$(MUFFIN_MAJOR_VERSION) -DMUFFIN_MINOR_VERSION=$(MUFFIN_MINOR_VERSION) -DMUFFIN_MICRO_VERSION=$(MUFFIN_MICRO_VERSION) -DMUFFIN_PLUGIN_API_VERSION=$(MUFFIN_PLUGIN_API_VERSION) -DMUFFIN_PLUGIN_DIR=\"@MUFFIN_PLUGIN_DIR@\"
+ 
+-default_la_CFLAGS   = -fPIC
+ default_la_SOURCES  = default.c
+ default_la_LDFLAGS  = -module -avoid-version -no-undefined
+-default_la_LIBADD   = @CLUTTER_LIBS@
++default_la_LIBADD   = $(top_builddir)/src/libmuffin.la @CLUTTER_LIBS@
+ 
+ pkglib_LTLIBRARIES = default.la
+ 

@@ -1,0 +1,24 @@
+inherit gnome2
+
+NAME="muffin"
+VERSION=2.8.3
+RELEASE=1
+CATEGORY="X11"
+SUMMARY="Cinnamon window manager"
+DESCRIPTION="Muffin is a window and compositing manager that displays and
+manages your desktop via OpenGL. Muffin combines a sophisticated display engine
+using the Clutter toolkit with solid window-management logic inherited from the
+Metacity window manager.  While Muffin can be used stand-alone, it is primarily
+intended to be used as the display core of the Cinnamon desktop."
+HOMEPAGE="http://cinnamon.linuxmint.com/"
+SRC_URI="https://github.com/linuxmint/${NAME}/archive/${VERSION}/${NAME}-${VERSION}.tar.gz"
+PATCH_URI="2.6.1-no-undefined.patch"
+
+PKG_NAMES="${NAME} ${NAME}-devel ${NAME}-doc"
+muffin_REQUIRES="girepository-CinnamonDesktop3.0 Clutter1.0 girepository-Gtk3.0 zenity"
+muffin_CONTENTS="--exclude=gtk-doc etc/ usr/bin/ usr/lib/muffin/ usr/share/"
+muffin_devel_CONTENTS="usr/include/ usr/lib/lib* usr/lib/pkgconfig/"
+muffin_doc_CATEGORY="Doc"
+muffin_doc_CONTENTS="usr/share/gtk-doc/"
+
+DIFF_EXCLUDES="inlinepixbufs.h"
